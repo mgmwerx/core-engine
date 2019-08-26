@@ -7,7 +7,6 @@ RUN npx tsc --project .
 
 FROM mhart/alpine-node:12
 WORKDIR ./app
-RUN ls -l
 COPY . .
 RUN npm ci --production
 

@@ -21,10 +21,10 @@ Core server that receives and processes scraped data, and persists to the data s
 The following environment variables are used to configure the service, some of these are required for the service to 
 connect to the data store.
 
- * __DB_USERNAME__:  The username of the account used to connect to the database
- * __DB_PASSWORD__: The password for the account used to connect to the database
- * __DB_HOST__: The database host
- * __DB_DATABASE__: The name of the database to which the service will connect
+ * __PGUSER__:  The username of the account used to connect to the database
+ * __PGPASSWORD__: The password for the account used to connect to the database
+ * __PGHOST__: The database host
+ * __PGDATABASE__: The name of the database to which the service will connect
  * __DB_PORT__: _(Optional)_ The database host port, defaults to 5432
  * __PORT__: _(Optional)_ The port on which the web server will listen, defaults to 3000
 

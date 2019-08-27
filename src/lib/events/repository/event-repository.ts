@@ -15,8 +15,8 @@ export class EventRepository {
 
     public static async findAll(): Promise<IEvent[]> {
         try {
-            const events: IEvent[] = await db.any<IEvent>(sqlFindEvents);
-            return events.map((result) => toIEvent(result));
+            const rs = await db.query(sqlFindEvents);
+            return rs.rows.map<IEvent>((result) => toIEvent(result));
         } catch (error) {
             console.log(error);
             throw error;

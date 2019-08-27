@@ -1,14 +1,12 @@
 import express from "express";
+import { routes as eventRoutes } from "./events/routes";
 
 const app = express();
 app.use(express.json());
 
-app.post("/events", (req, res) => {
-  // WIP - this is just a placeholder that echoes the body received from the scraper client
-  res.send(req.body);
-});
-
+app.use("/events", eventRoutes());
 app.get("/", (_req, res) => {
+  // Send a simple response to indicate the service is running
   res.send("ok");
 });
 

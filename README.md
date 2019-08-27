@@ -25,6 +25,6 @@ connect to the data store.
  * __PGPASSWORD__: The password for the account used to connect to the database
  * __PGHOST__: The database host
  * __PGDATABASE__: The name of the database to which the service will connect
- * __DB_PORT__: _(Optional)_ The database host port, defaults to 5432
+ * __PGPORT__: _(Optional)_ The database host port, defaults to 5432
  * __PORT__: _(Optional)_ The port on which the web server will listen, defaults to 3000
 

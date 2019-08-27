@@ -13,20 +13,16 @@ const sqlFindEvents =
 
 export class EventRepository {
 
-    public static findAll(): Promise<IEvent[] | void> {
-        return db.any(sqlFindEvents)
-            .then((results: any[]) => {
-                return results.map<IEvent>((result) => toIEvent(result));
-            })
-            .catch((error: any) => {
-                console.log(error);
-                throw error;
-            });
+    public static async findAll(): Promise<IEvent[]> {
+        try {
+            const events: IEvent[] = await db.any<IEvent>(sqlFindEvents);
+            return events.map((result) => toIEvent(result));
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 
-    public static save(event: IEvent): Promise<any> {
-        return db.none("INSERT INTO ", event);
-    }
 }
 
 export default EventRepository;

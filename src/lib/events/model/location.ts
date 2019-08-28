@@ -4,5 +4,5 @@ export default interface ILocation {
     street2: string;
     city: string;
     state: string;
-    zip: string;
+    zip: number;
 }

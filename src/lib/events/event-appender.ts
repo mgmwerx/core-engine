@@ -1,13 +1,14 @@
 import db from "../db";
 import IEvent from "./model/event";
-import { saveEvent } from "./repository/event-repository";
+import { IEventKey, findEventKeys, saveEvent } from "./repository/event-repository";
 import { findLocationIdByKey, saveLocation } from "./repository/location-repository";
 
 export default class EventAppender {
-    public appendEvents(events: IEvent[]) {
+    public async appendEvents(events: IEvent[]) {
+        const existingEventKeys: IEventKey[] = await findEventKeys();
         events.forEach((event) => {
             const normalizedEvent = this.normalizeEvent(event);
-            if (this.isNewEvent(normalizedEvent)) {
+            if (this.isNewEvent(normalizedEvent, existingEventKeys)) {
                 this.addEvent(normalizedEvent);
             }
         });
@@ -21,12 +22,14 @@ export default class EventAppender {
         };
     }
 
-    private isNewEvent(event: IEvent): boolean {
-        // TODO: Attempt to weed out duplicate events
-        return !(event === undefined);
+    private isNewEvent(event: IEvent, eventKeys: IEventKey[]): boolean {
+        // Rudimentary and quickly hacked together de-duplication
+        const matchingEventKeys = eventKeys
+            .filter((k) => k.title === event.title && k.starts_at === event.starts_at);
+        return matchingEventKeys.length === 0;
     }
 
-    private async addEvent(event: IEvent): Promise<void> {
+    private addEvent(event: IEvent): void {
         db.tx(async (t) => {
                 let locationId: number | null = null;
                 if (event.location) {

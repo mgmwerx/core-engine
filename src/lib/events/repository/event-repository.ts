@@ -1,28 +1,40 @@
 import db from "../../db";
-import { toIEvent} from "./model-adapter";
+import { toEvent} from "./model-adapter";
 import IEvent from "../model/event";
+import { ITask } from "pg-promise";
+
+const sqlInsert =
+    "INSERT INTO events (title, location_id, starts_at, ends_at, description, website_url, upload_time) " +
+    "VALUES (${title}, ${locationId}, ${starts_at}, ${ends_at}, ${description}, ${url}, CURRENT_TIMESTAMP);";
 
 const sqlFindEvents =
-    "SELECT " +
-    "    events.*, " +
-    "    locations.*, " +
-    "    events.start_date + events.start_time as starts_at, " +
-    "    events.end_date + events.end_time as ends_at " +
+    "SELECT events.*, locations.* " +
     "FROM events " +
-    "INNER JOIN locations ON locations.id = events.location_id";
+    "LEFT OUTER JOIN locations ON locations.id = events.location_id";
 
-export class EventRepository {
+const findEventKeysSql =
+    "SELECT title, TO_CHAR(starts_at AT TIME ZONE 'CDT', 'YYYY-MM-DD\"T\"HH24:MI') as starts_at " +
+    "FROM events";
 
-    public static async findAll(): Promise<IEvent[]> {
-        try {
-            const rs = await db.query(sqlFindEvents);
-            return rs.rows.map<IEvent>((result) => toIEvent(result));
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
-    }
-
+export interface IEventKey {
+    title: string;
+    starts_at: number;
 }
 
-export default EventRepository;
+export const findAllEvents = async (): Promise<IEvent[]> => {
+    try {
+        const rsEvents = await db.any(sqlFindEvents);
+        return rsEvents.map<IEvent>((result) => toEvent(result));
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+
+export const findEventKeys = async (t?: ITask<{}>): Promise<IEventKey[]> => {
+    return await (t || db).any(findEventKeysSql);
+};
+
+export const saveEvent = async (event: IEvent, locationId: number | null, t: ITask<{}>): Promise<void> => {
+    await t.none(sqlInsert, { ...event, locationId });
+};
